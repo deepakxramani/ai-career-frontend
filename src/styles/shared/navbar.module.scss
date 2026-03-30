@@ -1,0 +1,255 @@
+// ─── Design Tokens ───────────────────────────────────────────────
+$bg-dark: #0d0f14;
+$bg-surface: #13161d;
+$bg-elevated: #1a1e28;
+$accent: #6c63ff;
+$accent-glow: rgba(108, 99, 255, 0.25);
+$accent-soft: rgba(108, 99, 255, 0.12);
+$text-primary: #f0f0f5;
+$text-muted: #7a7f96;
+$text-faint: #3d4157;
+$border: rgba(255, 255, 255, 0.06);
+$radius: 12px;
+$navbar-h: 64px;
+$sidebar-w: 240px;
+$sidebar-w-coll: 64px;
+$transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ─── Navbar ──────────────────────────────────────────────────────
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: $navbar-h;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding: 0 20px 0 0;
+  background: rgba($bg-dark, 0.88);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom: 1px solid $border;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: $sidebar-w;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, $accent-glow 0%, transparent 60%);
+    transition: left $transition;
+  }
+
+  &.collapsed::after {
+    left: $sidebar-w-coll;
+  }
+}
+
+.logo {
+  width: $sidebar-w;
+  height: $navbar-h;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+  flex-shrink: 0;
+  transition: width $transition;
+  border-right: 1px solid $border;
+
+  .logoIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, $accent 0%, #9b8cff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    box-shadow: 0 0 14px $accent-glow;
+  }
+
+  .logoText {
+    font-family: 'Syne', 'Clash Display', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: $text-primary;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    transition:
+      opacity $transition,
+      width $transition;
+
+    span {
+      color: $accent;
+    }
+  }
+
+  .collapsed & {
+    width: $sidebar-w-coll;
+    padding: 0;
+    justify-content: center;
+    border-right: 1px solid $border;
+
+    .logoText {
+      opacity: 0;
+      width: 0;
+    }
+  }
+}
+
+.navBody {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+}
+
+.toggleBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid $border;
+  background: $bg-elevated;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition;
+  flex-shrink: 0;
+
+  &:hover {
+    color: $text-primary;
+    border-color: $accent;
+    background: $accent-soft;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.searchBar {
+  flex: 1;
+  max-width: 380px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $bg-elevated;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 0 12px;
+  transition:
+    border-color $transition,
+    box-shadow $transition;
+
+  &:focus-within {
+    border-color: $accent;
+    box-shadow: 0 0 0 3px $accent-soft;
+  }
+
+  svg {
+    width: 15px;
+    height: 15px;
+    color: $text-muted;
+    flex-shrink: 0;
+  }
+
+  input {
+    background: none;
+    border: none;
+    outline: none;
+    color: $text-primary;
+    font-size: 13.5px;
+    width: 100%;
+
+    &::placeholder {
+      color: $text-muted;
+    }
+  }
+
+  kbd {
+    font-size: 11px;
+    color: $text-faint;
+    background: $bg-surface;
+    border: 1px solid $border;
+    border-radius: 4px;
+    padding: 1px 5px;
+    white-space: nowrap;
+  }
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconBtn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid $border;
+  background: $bg-elevated;
+  color: $text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition;
+
+  &:hover {
+    color: $text-primary;
+    border-color: rgba(255, 255, 255, 0.12);
+    background: lighten($bg-elevated, 3%);
+  }
+
+  svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $accent;
+    border: 2px solid $bg-dark;
+    box-shadow: 0 0 6px $accent-glow;
+  }
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $accent 0%, #ff6c8a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  border: 2px solid $border;
+  transition:
+    border-color $transition,
+    box-shadow $transition;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    border-color: $accent;
+    box-shadow: 0 0 10px $accent-glow;
+  }
+}
