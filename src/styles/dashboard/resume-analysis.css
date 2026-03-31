@@ -1,0 +1,749 @@
+/* ── Resume Analysis Page ─────────────────────── */
+
+/* ── Upload Section ──────────────────────────── */
+.ra-upload-area {
+  border: 2px dashed var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--bg-card);
+  backdrop-filter: blur(24px);
+  position: relative;
+  overflow: hidden;
+}
+
+.ra-upload-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.03),
+    rgba(168, 85, 247, 0.03)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.ra-upload-area:hover,
+.ra-upload-area.ra-drag-active {
+  border-color: var(--border-glow);
+  background: var(--bg-card-hover);
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.08);
+}
+
+.ra-upload-area:hover::before,
+.ra-upload-area.ra-drag-active::before {
+  opacity: 1;
+}
+
+.ra-upload-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 1rem;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.15),
+    rgba(168, 85, 247, 0.08)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  color: var(--accent-mid);
+}
+
+.ra-upload-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem;
+}
+
+.ra-upload-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0 0 1rem;
+}
+
+.ra-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.ra-upload-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.35);
+}
+
+.ra-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.ra-upload-formats {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin: 0.75rem 0 0;
+}
+
+.ra-selected-file {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(99, 102, 241, 0.08);
+  border-radius: 0.5rem;
+  display: inline-flex;
+}
+
+.ra-selected-file-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--accent-mid);
+}
+
+.ra-selected-file-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.15rem;
+  border-radius: 50%;
+  display: flex;
+  transition: color 0.2s ease;
+}
+
+.ra-selected-file-remove:hover {
+  color: #ef4444;
+}
+
+/* ── Analyzing State ─────────────────────────── */
+.ra-analyzing {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.ra-analyzing-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--accent-mid);
+  border-radius: 50%;
+  animation: spin-slow 1s linear infinite;
+  margin: 0 auto 1.25rem;
+}
+
+.ra-analyzing-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem;
+}
+
+.ra-analyzing-sub {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Header row ──────────────────────────────── */
+.ra-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.ra-page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ra-page-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0;
+}
+
+/* ── History Section ─────────────────────────── */
+.ra-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 2rem 0 1rem;
+}
+
+.ra-history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.ra-history-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ra-history-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-start),
+    var(--accent-mid),
+    var(--accent-end)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ra-history-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+}
+
+.ra-history-card:hover::before {
+  opacity: 1;
+}
+
+.ra-history-card.ra-active {
+  border-color: var(--border-glow);
+  background: var(--bg-card-hover);
+}
+
+.ra-history-card.ra-active::before {
+  opacity: 1;
+}
+
+.ra-history-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.ra-history-filename {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.ra-history-date {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.ra-history-bottom {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ra-history-score {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ra-score-ring {
+  width: 36px;
+  height: 36px;
+}
+
+.ra-score-ring-bg {
+  fill: none;
+  stroke: rgba(139, 92, 246, 0.1);
+  stroke-width: 3;
+}
+
+.ra-score-ring-fill {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.ra-score-ring-fill.ra-ring--high {
+  stroke: #34d399;
+}
+
+.ra-score-ring-fill.ra-ring--mid {
+  stroke: #fbbf24;
+}
+
+.ra-score-ring-fill.ra-ring--low {
+  stroke: #f87171;
+}
+
+.ra-score-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ra-history-level {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--accent-mid);
+}
+
+.ra-history-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.ra-history-role-tag {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--text-secondary);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+}
+
+/* ── Detail View ─────────────────────────────── */
+.ra-detail {
+  margin-top: 2rem;
+}
+
+.ra-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.ra-detail-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.ra-detail-meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.ra-detail-back {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.ra-detail-back:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-glow);
+  color: var(--text-primary);
+}
+
+/* ── Score Hero ───────────────────────────────── */
+.ra-score-hero {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.ra-score-big-ring {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.ra-score-big-bg {
+  fill: none;
+  stroke: rgba(139, 92, 246, 0.1);
+  stroke-width: 6;
+}
+
+.ra-score-big-fill {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ra-score-big-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  fill: var(--text-primary);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.ra-score-big-label {
+  font-size: 0.6rem;
+  fill: var(--text-secondary);
+  text-anchor: middle;
+}
+
+.ra-score-info h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem;
+}
+
+.ra-score-info p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+}
+
+.ra-score-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ra-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 99px;
+}
+
+.ra-badge--indigo {
+  background: rgba(99, 102, 241, 0.12);
+  color: #818cf8;
+}
+
+.ra-badge--purple {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+}
+
+.ra-badge--emerald {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+
+.ra-badge--amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+}
+
+.ra-badge--cyan {
+  background: rgba(6, 182, 212, 0.12);
+  color: #22d3ee;
+}
+
+/* ── Detail Grid ─────────────────────────────── */
+.ra-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.ra-grid-full {
+  grid-column: 1 / -1;
+}
+
+/* ── Panel ────────────────────────────────────── */
+.ra-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.5rem;
+  transition: border-color 0.3s ease;
+}
+
+.ra-panel:hover {
+  border-color: var(--border-glow);
+}
+
+.ra-panel-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ra-panel-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--accent-mid);
+}
+
+/* ── Tags / pills ─────────────────────────────── */
+.ra-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ra-tag {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.25rem 0.65rem;
+  border-radius: 99px;
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--text-secondary);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  transition: all 0.2s ease;
+}
+
+.ra-tag:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: var(--border-glow);
+  color: var(--text-primary);
+}
+
+.ra-tag--tech {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+}
+
+.ra-tag--soft {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.ra-tag--tool {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.ra-tag--missing {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+/* ── Lists ────────────────────────────────────── */
+.ra-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.ra-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.ra-list-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.45rem;
+}
+
+.ra-list-dot--green {
+  background: #34d399;
+}
+
+.ra-list-dot--red {
+  background: #f87171;
+}
+
+.ra-list-dot--amber {
+  background: #fbbf24;
+}
+
+.ra-list-dot--blue {
+  background: #818cf8;
+}
+
+.ra-list-dot--cyan {
+  background: #22d3ee;
+}
+
+/* ── Rewrite Tips ─────────────────────────────── */
+.ra-tips-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.ra-tip-card {
+  background: rgba(99, 102, 241, 0.04);
+  border: 1px solid rgba(99, 102, 241, 0.08);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.ra-tip-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-mid);
+  margin: 0 0 0.4rem;
+}
+
+.ra-tip-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Salary / Meta ────────────────────────────── */
+.ra-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.ra-meta-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.5rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.ra-meta-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: 0 0 0.35rem;
+}
+
+.ra-meta-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ── Empty State ──────────────────────────────── */
+.ra-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-secondary);
+}
+
+.ra-empty-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--text-muted);
+  margin: 0 auto 1rem;
+}
+
+.ra-empty-text {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 1024px) {
+  .ra-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ra-tips-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ra-score-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .ra-history-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ra-detail-header {
+    flex-direction: column;
+  }
+
+  .ra-meta-row {
+    flex-direction: column;
+  }
+
+  .ra-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
