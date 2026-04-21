@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: any;
@@ -18,6 +18,7 @@ export function AuthProvider({ children }: any) {
   const [user, setUser] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -58,6 +59,15 @@ export function AuthProvider({ children }: any) {
   // Don't render children until client-side hydration is complete.
   // This prevents any mismatch between server HTML and client state.
   if (!mounted) {
+    return null;
+  }
+
+  if (pathname === '/' && !token) {
+    router.push('/login');
+  }
+
+  if (pathname === '/' && token) {
+    router.push('/dashboard');
     return null;
   }
 
