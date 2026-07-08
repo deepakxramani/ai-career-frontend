@@ -27,7 +27,7 @@ const navItems = [
   },
   {
     label: 'Resume Analysis',
-    path: '/dashboard/resume-analysis',
+    path: '/resume-analysis',
     icon: (
       <svg
         className='sidebar-link-icon'
@@ -46,7 +46,7 @@ const navItems = [
   },
   {
     label: 'Job Matching',
-    path: '/dashboard/jobs',
+    path: '/jobs',
     icon: (
       <svg
         className='sidebar-link-icon'
@@ -65,7 +65,7 @@ const navItems = [
   },
   {
     label: 'Career Insights',
-    path: '/dashboard/career-insights',
+    path: '/career-insights',
     icon: (
       <svg
         className='sidebar-link-icon'
@@ -84,7 +84,7 @@ const navItems = [
   },
   {
     label: 'Interview Prep',
-    path: '/dashboard/interview',
+    path: '/interview',
     icon: (
       <svg
         className='sidebar-link-icon'
@@ -103,7 +103,7 @@ const navItems = [
   },
   {
     label: 'Settings',
-    path: '/dashboard/settings',
+    path: '/settings',
     icon: (
       <svg
         className='sidebar-link-icon'

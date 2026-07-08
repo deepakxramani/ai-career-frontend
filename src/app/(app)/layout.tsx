@@ -3,7 +3,7 @@
 import DashboardSidebar from '../../components/dashboard/Sidebar';
 import '../../styles/dashboard/dashboard.css';
 
-export default function DashboardLayout({
+export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
