@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { InterviewSession } from '@/src/types/interview';
+import { parseScore } from '@/src/utils/interview.utils';
 
 interface HistoryDrawerProps {
   isOpen: boolean;
@@ -92,13 +93,15 @@ export default function HistoryDrawer({
                     try {
                       const parsed = JSON.parse(msg.ai);
                       aiFeedbackText = parsed.feedback || parsed.next_question || '';
-                      aiScore = parsed.score ? `Score: ${parsed.score}/10` : '';
+                      const parsedScore = parseScore(parsed.score);
+                      aiScore = parsedScore ? `Score: ${parsedScore}/10` : '';
                     } catch {
                       aiFeedbackText = msg.ai;
                     }
                   } else if (msg.ai) {
                     aiFeedbackText = msg.ai.feedback || msg.ai.next_question || '';
-                    aiScore = msg.ai.score ? `Score: ${msg.ai.score}/10` : '';
+                    const parsedScore = parseScore(msg.ai.score);
+                    aiScore = parsedScore ? `Score: ${parsedScore}/10` : '';
                   }
 
                   return (

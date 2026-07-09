@@ -15,20 +15,59 @@ import type {
   InterviewSession,
   GeneratedQuestions,
 } from '@/src/types/interview';
+import { parseScore } from '@/src/utils/interview.utils';
 
 // ─── Flatten generated questions into a tagged list ─────────────
-function flattenQuestions(data: GeneratedQuestions): InterviewQuestion[] {
+function flattenQuestions(data: any): InterviewQuestion[] {
+  if (!data) return [];
+
+  let parsedData = data;
+  if (typeof data === 'string') {
+    try {
+      parsedData = JSON.parse(data);
+    } catch {
+      return [];
+    }
+  }
+
+  if (typeof parsedData !== 'object' || parsedData === null) {
+    return [];
+  }
+
+  // Handle cases where the questions are inside a nested "questions" object
+  const target = parsedData.questions || parsedData;
   const list: InterviewQuestion[] = [];
 
-  (data.technical_questions || []).forEach((q) =>
-    list.push({ text: q, category: 'Technical' }),
-  );
-  (data.hr_questions || []).forEach((q) =>
-    list.push({ text: q, category: 'HR' }),
-  );
-  (data.coding_questions || []).forEach((q) =>
-    list.push({ text: q, category: 'Coding' }),
-  );
+  const extractText = (q: any): string => {
+    if (!q) return '';
+    if (typeof q === 'string') return q;
+    if (typeof q === 'object') {
+      return q.question || q.text || q.content || JSON.stringify(q);
+    }
+    return String(q);
+  };
+
+  const getArray = (val: any): any[] => {
+    if (Array.isArray(val)) return val;
+    if (val && typeof val === 'object') return [];
+    if (val) return [val];
+    return [];
+  };
+
+  getArray(target.technical_questions).forEach((q: any) => {
+    const text = extractText(q);
+    if (text) list.push({ text, category: 'Technical' });
+  });
+
+  getArray(target.hr_questions).forEach((q: any) => {
+    const text = extractText(q);
+    if (text) list.push({ text, category: 'HR' });
+  });
+
+  getArray(target.coding_questions).forEach((q: any) => {
+    const text = extractText(q);
+    if (text) list.push({ text, category: 'Coding' });
+  });
 
   return list;
 }
@@ -124,11 +163,26 @@ export function useInterview() {
           userId: uid,
         });
 
-        setFeedback(res);
-        setScores((prev) => [...prev, Number(res.score) || 0]);
+        let parsedRes = res;
+        if (typeof res === 'string') {
+          try {
+            parsedRes = JSON.parse(res);
+          } catch (e) {
+            console.error('Failed to parse chat response:', e);
+          }
+        }
+
+        console.log("Hook - chatInterview raw response:", res);
+        console.log("Hook - chatInterview parsed response:", parsedRes);
+
+        setFeedback(parsedRes);
+        const parsedScore = parseScore(parsedRes?.score);
+        console.log("Hook - parsedScore value:", parsedScore);
+        setScores((prev) => [...prev, parsedScore]);
+        
         setChatHistory((prev) => [
           ...prev,
-          { user: answer, ai: res },
+          { user: answer, ai: parsedRes },
         ]);
       } catch (err: any) {
         console.error('Chat error:', err);

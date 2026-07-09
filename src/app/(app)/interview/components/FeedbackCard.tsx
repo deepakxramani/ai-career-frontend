@@ -1,6 +1,7 @@
 'use client';
 
 import type { ChatResponse } from '@/src/types/interview';
+import { parseScore } from '@/src/utils/interview.utils';
 
 interface FeedbackCardProps {
   feedback: ChatResponse;
@@ -13,7 +14,10 @@ export default function FeedbackCard({
   onNext,
   isLast,
 }: FeedbackCardProps) {
-  const score = Number(feedback.score) || 0;
+  console.log("FeedbackCard - raw feedback:", feedback);
+  console.log("FeedbackCard - feedback.score:", feedback?.score);
+  const score = parseScore(feedback?.score);
+  console.log("FeedbackCard - parsed score:", score);
 
   // Determine score color category
   const scoreClass =
