@@ -18,3 +18,9 @@ export const getJobFitHistory = async (userId: string) => {
 
     return res.data;
 };
+
+export const deleteJobFitRecord = async (id: string) => {
+    const res = await api.delete(`/jobs/${id}`);
+
+    return res.data;
+};

@@ -1,12 +1,29 @@
+'use client';
+
 import { useEffect, useState } from 'react';
-import { getJobFitHistory } from '@/src/services/job-fit.service';
+import { getJobFitHistory, deleteJobFitRecord } from '@/src/services/job-fit.service';
 import { JobFitHistory } from '@/src/types/job-fit';
 import { useAuth } from '@/src/context/AuthContext';
+import ConfirmModal from '@/src/components/shared/ConfirmModal';
+import toast from 'react-hot-toast';
 
-export default function HistorySection() {
+interface HistorySectionProps {
+    onSelect?: (item: JobFitHistory) => void;
+    onDelete?: (id: string) => void;
+    selectedId?: string;
+}
+
+export default function HistorySection({
+    onSelect,
+    onDelete,
+    selectedId,
+}: HistorySectionProps) {
     const { user } = useAuth();
     const [history, setHistory] = useState<JobFitHistory[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [recordIdToDelete, setRecordIdToDelete] = useState<string | null>(null);
 
     const uid = user?._id || user?.id || user?.userId;
 
@@ -26,6 +43,31 @@ export default function HistorySection() {
             console.error(error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDelete = (e: React.MouseEvent, id: string) => {
+        e.stopPropagation(); // Prevent triggering onSelect
+        setRecordIdToDelete(id);
+        setIsConfirmOpen(true);
+    };
+
+    const executeDelete = async () => {
+        if (!recordIdToDelete) return;
+
+        try {
+            setDeletingId(recordIdToDelete);
+            setIsConfirmOpen(false); // Close modal early for smooth feedback
+            await deleteJobFitRecord(recordIdToDelete);
+            setHistory((prev) => prev.filter((item) => item._id !== recordIdToDelete));
+            onDelete?.(recordIdToDelete);
+            toast.success('Analysis record deleted successfully');
+        } catch (error) {
+            console.error('Failed to delete record:', error);
+            toast.error('Failed to delete analysis record. Please try again.');
+        } finally {
+            setDeletingId(null);
+            setRecordIdToDelete(null);
         }
     };
 
@@ -78,28 +120,36 @@ export default function HistorySection() {
             <div className="space-y-4">
 
                 {history.map((item) => {
-                    const matchScore = item.matchScore ?? (item as any).result?.matchScore ?? 0;
-                    const jobTitle = item.role || item.jobTitle || (item as any).result?.jobTitle || 'Unknown Role';
-                    const company = item.company || (item as any).result?.company || 'Unknown Company';
-                    
+                    const matchScore = item.matchScore ?? 0;
+                    const jobTitle = item.jobTitle || 'Unknown Role';
+                    const company = item.company || 'Unknown Company';
+                    const isSelected = selectedId === item._id;
+                    const isDeleting = deletingId === item._id;
+
                     return (
                         <div
                             key={item._id}
-                            className="
+                            onClick={() => onSelect?.(item)}
+                            className={`
+                  group
+                  relative
                   rounded-xl
                   border
-                  border-[var(--border-subtle)]
-                  bg-[var(--bg-primary)]
                   p-5
                   transition-all
                   duration-200
-                  hover:border-indigo-500/50
                   hover:-translate-y-1
-                "
+                  ${onSelect ? 'cursor-pointer' : ''}
+                  ${isSelected
+                                    ? 'border-indigo-500 bg-indigo-500/10 ring-1 ring-indigo-500/30'
+                                    : 'border-[var(--border-subtle)] bg-[var(--bg-primary)] hover:border-indigo-500/50'
+                                }
+                  ${isDeleting ? 'pointer-events-none opacity-50' : ''}
+                `}
                         >
                             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-                                <div>
+                                <div className="flex-1">
 
                                     <h3 className="text-lg font-semibold text-white">
                                         {jobTitle}
@@ -115,15 +165,74 @@ export default function HistorySection() {
 
                                 </div>
 
-                                <div className="text-center">
+                                <div className="flex items-center gap-4">
 
-                                    <div className="text-4xl font-bold text-indigo-400">
-                                        {matchScore}%
+                                    <div className="text-center">
+
+                                        <div className="text-4xl font-bold text-indigo-400">
+                                            {matchScore}%
+                                        </div>
+
+                                        <p className="mt-1 text-xs text-[var(--text-muted)]">
+                                            Match Score
+                                        </p>
+
                                     </div>
 
-                                    <p className="mt-1 text-xs text-[var(--text-muted)]">
-                                        Match Score
-                                    </p>
+                                    {/* Delete button */}
+                                    <button
+                                        onClick={(e) => handleDelete(e, item._id)}
+                                        disabled={isDeleting}
+                                        title="Delete analysis"
+                                        className="
+                      flex h-9 w-9 shrink-0 items-center justify-center
+                      rounded-lg border border-transparent
+                      text-[var(--text-muted)]
+                      opacity-0 group-hover:opacity-100
+                      transition-all duration-200
+                      hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400
+                      focus:opacity-100 focus:outline-none focus:ring-1 focus:ring-red-500/30
+                    "
+                                    >
+                                        {isDeleting ? (
+                                            <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                            </svg>
+                                        ) : (
+                                            <svg
+                                                className="h-4 w-4"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={2}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                />
+                                            </svg>
+                                        )}
+                                    </button>
+
+                                    {onSelect && (
+                                        <div className="flex items-center">
+                                            <svg
+                                                className={`h-5 w-5 transition-colors ${isSelected ? 'text-indigo-400' : 'text-[var(--text-muted)]'}`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                strokeWidth={2}
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M9 5l7 7-7 7"
+                                                />
+                                            </svg>
+                                        </div>
+                                    )}
 
                                 </div>
 
@@ -133,6 +242,20 @@ export default function HistorySection() {
                 })}
 
             </div>
+
+            <ConfirmModal
+                isOpen={isConfirmOpen}
+                title="Delete Job Fit Analysis?"
+                message="Are you sure you want to delete this job fit analysis record? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={executeDelete}
+                onCancel={() => {
+                    setIsConfirmOpen(false);
+                    setRecordIdToDelete(null);
+                }}
+                isLoading={deletingId !== null && deletingId === recordIdToDelete}
+            />
         </section>
     );
 }

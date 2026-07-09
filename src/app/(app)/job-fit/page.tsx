@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import JobDescriptionForm from './components/JobDescriptionForm';
 import FitAnalysis from './components/FitAnalysis';
 import HistorySection from './components/HistorySection';
 import { useJobFit } from '@/src/hooks/useJobFit';
+import { JobFitHistory } from '@/src/types/job-fit';
 
 export default function JobFitPage() {
   const [jobDescription, setJobDescription] = useState('');
+  const [selectedHistoryId, setSelectedHistoryId] = useState<string | null>(null);
+  const analysisRef = useRef<HTMLDivElement>(null);
 
-  const { analysis, loading, analyze } = useJobFit();
+  const { analysis, loading, analyze, loadFromHistory, clearAnalysis } = useJobFit();
 
   const handleAnalyze = async () => {
     if (!jobDescription.trim()) {
@@ -17,7 +20,31 @@ export default function JobFitPage() {
       return;
     }
 
+    setSelectedHistoryId(null);
     await analyze(jobDescription);
+
+    // Scroll to analysis after it renders
+    setTimeout(() => {
+      analysisRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  const handleHistorySelect = (item: JobFitHistory) => {
+    setSelectedHistoryId(item._id);
+    loadFromHistory(item);
+
+    // Scroll to the analysis section
+    setTimeout(() => {
+      analysisRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  const handleHistoryDelete = (id: string) => {
+    // If the deleted item is currently being viewed, clear the analysis
+    if (selectedHistoryId === id) {
+      setSelectedHistoryId(null);
+      clearAnalysis();
+    }
   };
 
   return (
@@ -46,11 +73,17 @@ export default function JobFitPage() {
 
         {/* Analysis */}
         {analysis && (
-          <FitAnalysis analysis={analysis} />
+          <div ref={analysisRef}>
+            <FitAnalysis analysis={analysis} />
+          </div>
         )}
 
         {/* History */}
-        <HistorySection />
+        <HistorySection
+          onSelect={handleHistorySelect}
+          onDelete={handleHistoryDelete}
+          selectedId={selectedHistoryId ?? undefined}
+        />
       </div>
     </main>
   );

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { analyzeJobFit } from '@/src/services/job-fit.service';
 import { JobFitResponse } from '@/src/types/job-fit';
 import { useAuth } from '@/src/context/AuthContext';
+import toast from 'react-hot-toast';
 
 /**
  * Normalize AI response to match the JobFitResponse interface.
@@ -36,20 +37,42 @@ export function useJobFit() {
 
     const analyze = async (jobDescription: string) => {
         const uid = user?._id || user?.id || user?.userId || 'demo-user';
+        setLoading(true);
+
+        const analysisPromise = analyzeJobFit(jobDescription, uid);
+
+        toast.promise(analysisPromise, {
+            loading: 'Analyzing your job fit...',
+            success: 'Analysis completed successfully!',
+            error: (err) => {
+                const errMsg = err?.response?.data?.message || err?.message || 'Failed to analyze job description';
+                return `Error: ${errMsg}`;
+            }
+        });
+
         try {
-            setLoading(true);
-
-            const result = await analyzeJobFit(jobDescription, uid);
-
+            const result = await analysisPromise;
             setAnalysis(normalizeAnalysis(result));
+        } catch (error) {
+            console.error('Failed to analyze job fit:', error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const loadFromHistory = (historyItem: any) => {
+        setAnalysis(normalizeAnalysis(historyItem));
+    };
+
+    const clearAnalysis = () => {
+        setAnalysis(null);
     };
 
     return {
         loading,
         analysis,
         analyze,
+        loadFromHistory,
+        clearAnalysis,
     };
 }
