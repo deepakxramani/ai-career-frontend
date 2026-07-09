@@ -42,7 +42,7 @@ export default function RoleForm({
   isLoading,
 }: RoleFormProps) {
   return (
-    <div className='iv-setup-card animate-fade-in-up'>
+    <div className='w-[900px] justify-self-center iv-setup-card animate-fade-in-up'>
       {/* Role Input */}
       <div className='iv-form-group'>
         <label className='iv-form-label'>Job Role</label>
@@ -89,15 +89,17 @@ export default function RoleForm({
 
       {/* Resume Text (Optional) */}
       <div className='iv-form-group'>
-        <label className='iv-form-label'>
+        <label htmlFor='Resumetext' className='iv-form-label'>
           Resume Text
           <span className='iv-optional-tag'>(optional — improves relevance)</span>
         </label>
         <textarea
-          className='iv-form-textarea'
+          id='Resumetext'
+          className='h-[300px] iv-form-textarea'
           placeholder='Paste your resume text here for more personalized questions...'
           value={resumeText}
           onChange={(e) => setResumeText(e.target.value)}
+          name='Resumetext'
         />
       </div>
 
