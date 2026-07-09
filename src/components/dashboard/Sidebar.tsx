@@ -45,8 +45,8 @@ const navItems = [
     ),
   },
   {
-    label: 'Job Matching',
-    path: '/jobs',
+    label: 'Job Fit Analyzer',
+    path: '/job-fit',
     icon: (
       <svg
         className='sidebar-link-icon'
