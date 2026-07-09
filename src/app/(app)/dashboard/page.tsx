@@ -2,17 +2,41 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/src/context/AuthContext';
+import { getDashboardStats, DashboardData } from '@/src/services/dashboard.service';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const uid = user?._id || user?.id || user?.userId;
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (uid) {
+      fetchDashboard(uid);
+    } else {
+      setLoading(false);
+    }
+  }, [uid]);
+
+  const fetchDashboard = async (userId: string) => {
+    try {
+      setLoading(true);
+      const res = await getDashboardStats(userId);
+      setData(res);
+    } catch (error) {
+      console.error('Failed to fetch dashboard stats:', error);
+      toast.error('Failed to load dashboard data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const userName = user?.username || user?.name || 'User';
-  const userEmail = user?.email || '';
   const initials = userName
     .split(' ')
     .map((n: string) => n[0])
@@ -27,13 +51,12 @@ export default function DashboardPage() {
     return 'Good Evening';
   })();
 
+  // Render stats cards based on fetched data or defaults
   const statsData = [
     {
       label: 'Resume Score',
-      value: '85',
+      value: loading ? '...' : (data?.stats?.resumeScore || 0).toString(),
       suffix: '/100',
-      trend: '+12',
-      trendType: 'up' as const,
       iconVariant: 'indigo',
       icon: (
         <svg
@@ -52,13 +75,11 @@ export default function DashboardPage() {
         </svg>
       ),
       hasRing: true,
-      ringPercent: 85,
+      ringPercent: data?.stats?.resumeScore || 0,
     },
     {
       label: 'Jobs Matched',
-      value: '24',
-      trend: '+5',
-      trendType: 'up' as const,
+      value: loading ? '...' : (data?.stats?.jobsMatched || 0).toString(),
       iconVariant: 'purple',
       icon: (
         <svg
@@ -78,10 +99,8 @@ export default function DashboardPage() {
       ),
     },
     {
-      label: 'Applications',
-      value: '12',
-      trend: '+3',
-      trendType: 'up' as const,
+      label: 'Interviews Practiced',
+      value: loading ? '...' : (data?.stats?.interviewsPracticed || 0).toString(),
       iconVariant: 'emerald',
       icon: (
         <svg
@@ -95,17 +114,15 @@ export default function DashboardPage() {
           <path
             strokeLinecap='round'
             strokeLinejoin='round'
-            d='M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5'
+            d='M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z'
           />
         </svg>
       ),
     },
     {
       label: 'Profile Strength',
-      value: '72',
+      value: loading ? '...' : (data?.stats?.profileStrength || 10).toString(),
       suffix: '%',
-      trend: 'Steady',
-      trendType: 'steady' as const,
       iconVariant: 'amber',
       icon: (
         <svg
@@ -131,6 +148,7 @@ export default function DashboardPage() {
       label: 'Upload Resume',
       desc: 'Get AI-powered feedback instantly',
       variant: 'indigo',
+      href: '/resume-analysis',
       icon: (
         <svg
           width='24'
@@ -152,6 +170,7 @@ export default function DashboardPage() {
       label: 'Browse Jobs',
       desc: 'Explore AI-curated job matches',
       variant: 'purple',
+      href: '/job-fit',
       icon: (
         <svg
           width='24'
@@ -170,30 +189,10 @@ export default function DashboardPage() {
       ),
     },
     {
-      label: 'Career Insights',
-      desc: 'Data-driven career guidance',
-      variant: 'emerald',
-      icon: (
-        <svg
-          width='24'
-          height='24'
-          fill='none'
-          viewBox='0 0 24 24'
-          stroke='currentColor'
-          strokeWidth={1.5}
-        >
-          <path
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            d='M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941'
-          />
-        </svg>
-      ),
-    },
-    {
-      label: 'Interview Prep',
+      label: 'Mock Interviews',
       desc: 'Practice with AI mock interviews',
       variant: 'cyan',
+      href: '/interview',
       icon: (
         <svg
           width='24'
@@ -211,43 +210,32 @@ export default function DashboardPage() {
         </svg>
       ),
     },
-  ];
-
-  const activities = [
     {
-      text: 'Resume analyzed — scored <strong>85/100</strong>',
-      time: '2 hours ago',
-      dotVariant: 'indigo',
-    },
-    {
-      text: 'Matched with <strong>5 new jobs</strong> in Full-Stack Development',
-      time: '5 hours ago',
-      dotVariant: 'emerald',
-    },
-    {
-      text: 'Application sent to <strong>TechCorp Inc.</strong>',
-      time: 'Yesterday',
-      dotVariant: 'purple',
-    },
-    {
-      text: 'Completed <strong>Interview Prep</strong> — React session',
-      time: '2 days ago',
-      dotVariant: 'amber',
-    },
-    {
-      text: 'Profile strength increased to <strong>72%</strong>',
-      time: '3 days ago',
-      dotVariant: 'indigo',
+      label: 'Job Match History',
+      desc: 'View all past matching analyses',
+      variant: 'emerald',
+      href: '/job-fit',
+      icon: (
+        <svg
+          width='24'
+          height='24'
+          fill='none'
+          viewBox='0 0 24 24'
+          stroke='currentColor'
+          strokeWidth={1.5}
+        >
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            d='M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941'
+          />
+        </svg>
+      ),
     },
   ];
 
-  const skills = [
-    { name: 'React / Next.js', percent: 90, variant: 'indigo' },
-    { name: 'Node.js', percent: 78, variant: 'emerald' },
-    { name: 'TypeScript', percent: 85, variant: 'purple' },
-    { name: 'Python', percent: 60, variant: 'cyan' },
-    { name: 'AWS / Cloud', percent: 45, variant: 'amber' },
-  ];
+  const activities = data?.activities || [];
+  const skills = data?.skills || [];
 
   // SVG ring calculations
   const ringRadius = 20;
@@ -322,7 +310,7 @@ export default function DashboardPage() {
         {statsData.map((stat, i) => (
           <div
             key={stat.label}
-            className={`stat-card animate-fade-in-up dash-delay-${i + 1}`}
+            className={`stat-card animate-fade-in-up dash-delay-${i + 1} ${loading ? 'animate-pulse' : ''}`}
             style={{ opacity: mounted ? 1 : 0 }}
           >
             <div className='stat-card-header'>
@@ -346,18 +334,16 @@ export default function DashboardPage() {
                     r={ringRadius}
                     strokeDasharray={ringCircumference}
                     strokeDashoffset={
-                      mounted
+                      mounted && !loading
                         ? ringCircumference -
-                          (stat.ringPercent! / 100) * ringCircumference
+                          (stat.ringPercent / 100) * ringCircumference
                         : ringCircumference
                     }
                   />
                 </svg>
               ) : (
-                <span
-                  className={`stat-card-trend stat-card-trend--${stat.trendType}`}
-                >
-                  {stat.trendType === 'up' && '↑'} {stat.trend}
+                <span className="stat-card-trend stat-card-trend--up">
+                  Active
                 </span>
               )}
             </div>
@@ -386,9 +372,10 @@ export default function DashboardPage() {
       </h2>
       <div className='quick-actions-grid'>
         {quickActions.map((action, i) => (
-          <div
+          <Link
             key={action.label}
-            className={`quick-action-card animate-fade-in-up dash-delay-${i + 5}`}
+            href={action.href}
+            className={`quick-action-card animate-fade-in-up dash-delay-${i + 5} cursor-pointer block hover:scale-[1.02] active:scale-[0.98] transition-all`}
             style={{ opacity: mounted ? 1 : 0 }}
           >
             <div
@@ -398,7 +385,7 @@ export default function DashboardPage() {
             </div>
             <span className='quick-action-label'>{action.label}</span>
             <p className='quick-action-desc'>{action.desc}</p>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -406,39 +393,57 @@ export default function DashboardPage() {
       <div className='dashboard-bottom'>
         {/* Recent Activity */}
         <div
-          className='dashboard-panel animate-fade-in-up dash-delay-7'
+          className={`dashboard-panel animate-fade-in-up dash-delay-7 ${loading ? 'animate-pulse' : ''}`}
           style={{ opacity: mounted ? 1 : 0 }}
         >
           <div className='dashboard-panel-header'>
             <h3 className='dashboard-panel-title'>Recent Activity</h3>
-            <span className='panel-badge'>Last 7 days</span>
+            <span className='panel-badge'>Realtime logs</span>
           </div>
           <div className='activity-list'>
-            {activities.map((a, i) => (
-              <div key={i} className='activity-item'>
-                <div className='activity-dot-col'>
-                  <div
-                    className={`activity-dot activity-dot--${a.dotVariant}`}
-                  />
-                  {i < activities.length - 1 && (
+            {loading ? (
+              // Simple loading skeleton list
+              [1, 2, 3].map((n) => (
+                <div key={n} className='activity-item'>
+                  <div className='activity-dot-col'>
+                    <div className='activity-dot activity-dot--indigo' />
                     <div className='activity-line' />
-                  )}
+                  </div>
+                  <div className='activity-content space-y-2 py-1'>
+                    <div className='h-4 w-3/4 rounded bg-[var(--bg-primary)]' />
+                    <div className='h-3 w-1/4 rounded bg-[var(--bg-primary)]' />
+                  </div>
                 </div>
-                <div className='activity-content'>
-                  <p
-                    className='activity-text'
-                    dangerouslySetInnerHTML={{ __html: a.text }}
-                  />
-                  <span className='activity-time'>{a.time}</span>
+              ))
+            ) : activities.length > 0 ? (
+              activities.map((a, i) => (
+                <div key={i} className='activity-item'>
+                  <div className='activity-dot-col'>
+                    <div
+                      className={`activity-dot activity-dot--${a.dotVariant}`}
+                    />
+                    {i < activities.length - 1 && (
+                      <div className='activity-line' />
+                    )}
+                  </div>
+                  <div className='activity-content'>
+                    <p
+                      className='activity-text'
+                      dangerouslySetInnerHTML={{ __html: a.text }}
+                    />
+                    <span className='activity-time'>{a.time}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-sm text-[var(--text-muted)] py-4">No recent activities found.</p>
+            )}
           </div>
         </div>
 
         {/* Skill Progress */}
         <div
-          className='dashboard-panel animate-fade-in-up dash-delay-8'
+          className={`dashboard-panel animate-fade-in-up dash-delay-8 ${loading ? 'animate-pulse' : ''}`}
           style={{ opacity: mounted ? 1 : 0 }}
         >
           <div className='dashboard-panel-header'>
@@ -446,20 +451,35 @@ export default function DashboardPage() {
             <span className='panel-badge'>Top Skills</span>
           </div>
           <div className='skills-list'>
-            {skills.map((skill) => (
-              <div key={skill.name} className='skill-item'>
-                <div className='skill-header'>
-                  <span className='skill-name'>{skill.name}</span>
-                  <span className='skill-percent'>{skill.percent}%</span>
+            {loading ? (
+              // Simple loading skeleton list
+              [1, 2, 3].map((n) => (
+                <div key={n} className='skill-item space-y-2'>
+                  <div className='flex justify-between'>
+                    <div className='h-4 w-1/3 rounded bg-[var(--bg-primary)]' />
+                    <div className='h-4 w-10 rounded bg-[var(--bg-primary)]' />
+                  </div>
+                  <div className='h-2 w-full rounded bg-[var(--bg-primary)]' />
                 </div>
-                <div className='skill-bar'>
-                  <div
-                    className={`skill-bar-fill skill-bar-fill--${skill.variant}`}
-                    style={{ width: mounted ? `${skill.percent}%` : '0%' }}
-                  />
+              ))
+            ) : skills.length > 0 ? (
+              skills.map((skill) => (
+                <div key={skill.name} className='skill-item'>
+                  <div className='skill-header'>
+                    <span className='skill-name'>{skill.name}</span>
+                    <span className='skill-percent'>{skill.percent}%</span>
+                  </div>
+                  <div className='skill-bar'>
+                    <div
+                      className={`skill-bar-fill skill-bar-fill--${skill.variant}`}
+                      style={{ width: mounted ? `${skill.percent}%` : '0%' }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-sm text-[var(--text-muted)] py-4">Upload a resume to extract your skills.</p>
+            )}
           </div>
         </div>
       </div>
