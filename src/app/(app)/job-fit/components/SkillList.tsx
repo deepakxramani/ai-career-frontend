@@ -43,8 +43,8 @@ export default function SkillList({
         );
 
     return (
-        <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-6 shadow-lg">
-            <h3 className="mb-5 text-xl font-semibold text-white">
+        <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4 sm:p-6 shadow-lg">
+            <h3 className="mb-4 sm:mb-5 text-base sm:text-xl font-semibold text-white">
                 {title}
             </h3>
 
@@ -53,20 +53,20 @@ export default function SkillList({
                     No data available.
                 </p>
             ) : (
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                     {skills?.map((skill) => (
                         <div
                             key={skill}
                             className="
                 flex
                 items-center
-                gap-2
+                gap-1.5 sm:gap-2
                 rounded-full
                 border
                 border-[var(--border-subtle)]
                 bg-[var(--bg-primary)]
-                px-4
-                py-2
+                px-2.5 sm:px-4
+                py-1 sm:py-2
                 transition-all
                 duration-200
                 hover:border-[var(--accent-mid)]
@@ -75,7 +75,7 @@ export default function SkillList({
                         >
                             {icon}
 
-                            <span className="text-sm text-white">
+                            <span className="text-xs sm:text-sm text-white">
                                 {skill}
                             </span>
                         </div>

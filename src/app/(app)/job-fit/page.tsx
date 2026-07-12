@@ -48,15 +48,15 @@ export default function JobFitPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[var(--bg-primary)] py-10 px-5">
-      <div className="mx-auto max-w-6xl space-y-8">
+    <main className="min-h-screen bg-[var(--bg-primary)] py-6 px-4 sm:py-10 sm:px-5">
+      <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-4xl font-bold text-white">
+          <h1 className="text-2xl sm:text-4xl font-bold text-white">
             Job Fit Analyzer
           </h1>
 
-          <p className="mt-2 max-w-2xl text-[var(--text-secondary)]">
+          <p className="mt-2 max-w-2xl text-sm sm:text-base text-[var(--text-secondary)]">
             Analyze how well your resume matches any job description and
             receive AI-powered recommendations to improve your chances of
             getting shortlisted.

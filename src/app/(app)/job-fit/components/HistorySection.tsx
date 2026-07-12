@@ -73,14 +73,14 @@ export default function HistorySection({
 
     if (loading) {
         return (
-            <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-6">
-                <div className="h-6 w-56 animate-pulse rounded bg-[var(--bg-primary)]" />
+            <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4 sm:p-6">
+                <div className="h-5 w-48 animate-pulse rounded bg-[var(--bg-primary)]" />
 
-                <div className="mt-6 space-y-4">
+                <div className="mt-5 space-y-4">
                     {[1, 2, 3].map((item) => (
                         <div
                             key={item}
-                            className="h-24 animate-pulse rounded-xl bg-[var(--bg-primary)]"
+                            className="h-16 sm:h-24 animate-pulse rounded-xl bg-[var(--bg-primary)]"
                         />
                     ))}
                 </div>
@@ -90,12 +90,12 @@ export default function HistorySection({
 
     if (!history.length) {
         return (
-            <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-10 text-center">
-                <h2 className="text-2xl font-semibold text-white">
+            <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4 sm:p-10 text-center">
+                <h2 className="text-lg sm:text-2xl font-semibold text-white">
                     Previous Analyses
                 </h2>
 
-                <p className="mt-4 text-[var(--text-secondary)]">
+                <p className="mt-3 text-xs sm:text-base text-[var(--text-secondary)]">
                     No previous Job Fit analyses found.
                 </p>
             </section>
@@ -103,11 +103,11 @@ export default function HistorySection({
     }
 
     return (
-        <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-6 shadow-lg">
+        <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-5 sm:p-6 shadow-lg">
 
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-5 sm:mb-6 flex items-center justify-between">
 
-                <h2 className="text-2xl font-semibold text-white">
+                <h2 className="text-xl sm:text-2xl font-semibold text-white">
                     Previous Analyses
                 </h2>
 
@@ -147,39 +147,39 @@ export default function HistorySection({
                   ${isDeleting ? 'pointer-events-none opacity-50' : ''}
                 `}
                         >
-                            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="flex items-center justify-between gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
 
-                                <div className="flex-1">
+                                <div className="flex-1 min-w-0">
 
-                                    <h3 className="text-lg font-semibold text-white">
+                                    <h3 className="text-sm sm:text-lg font-semibold text-white truncate">
                                         {jobTitle}
                                     </h3>
 
-                                    <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                                    <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-[var(--text-secondary)] truncate">
                                         {company}
                                     </p>
 
-                                    <p className="mt-3 text-xs text-[var(--text-muted)]">
+                                    <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-[var(--text-muted)]">
                                         {new Date(item.createdAt).toLocaleDateString()}
                                     </p>
 
                                 </div>
 
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2 sm:gap-4 shrink-0">
 
                                     <div className="text-center">
 
-                                        <div className="text-4xl font-bold text-indigo-400">
+                                        <div className="text-2xl sm:text-4xl font-bold text-indigo-400">
                                             {matchScore}%
                                         </div>
 
                                         <p className="mt-1 text-xs text-[var(--text-muted)]">
-                                            Match Score
+                                            Match
                                         </p>
 
                                     </div>
 
-                                    {/* Delete button */}
+                                    {/* Delete button — always visible on touch, hover-only on desktop */}
                                     <button
                                         onClick={(e) => handleDelete(e, item._id)}
                                         disabled={isDeleting}
@@ -188,7 +188,7 @@ export default function HistorySection({
                       flex h-9 w-9 shrink-0 items-center justify-center
                       rounded-lg border border-transparent
                       text-[var(--text-muted)]
-                      opacity-0 group-hover:opacity-100
+                      opacity-100 sm:opacity-0 sm:group-hover:opacity-100
                       transition-all duration-200
                       hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400
                       focus:opacity-100 focus:outline-none focus:ring-1 focus:ring-red-500/30

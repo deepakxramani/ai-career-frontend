@@ -22,23 +22,22 @@ export default function JobDescriptionForm({
     const disabled = loading || !value.trim();
 
     return (
-        <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-6 shadow-lg">
-            {/* Header */}
-            <div className="mb-6">
-                <h2 className="text-2xl font-semibold text-white">
-                    Paste Job Description
-                </h2>
+        <section className="glass-card rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4 sm:p-6 shadow-lg">
+        <div className="mb-4 sm:mb-6">
+            <h2 className="text-base sm:text-2xl font-semibold text-white">
+                Paste Job Description
+            </h2>
 
-                <p className="mt-2 text-sm text-[var(--text-secondary)]">
-                    Paste the complete job description from any company. We'll compare it
-                    against your saved resume and provide personalized recommendations.
-                </p>
-            </div>
+            <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-[var(--text-secondary)]">
+                Paste the complete job description from any company. We'll compare it
+                against your saved resume and provide personalized recommendations.
+            </p>
+        </div>
 
             {/* Textarea */}
             <div className="space-y-3">
                 <textarea
-                    rows={14}
+                    rows={8}
                     value={value}
                     maxLength={MAX_CHARACTERS}
                     onChange={(e) => onChange(e.target.value)}
@@ -50,8 +49,8 @@ export default function JobDescriptionForm({
             border
             border-[var(--border-subtle)]
             bg-[var(--bg-primary)]
-            p-4
-            text-sm
+            p-3 sm:p-4
+            text-xs sm:text-sm
             text-white
             outline-none
             transition
@@ -63,24 +62,24 @@ export default function JobDescriptionForm({
           "
                 />
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <span className="text-xs text-[var(--text-muted)]">
                         {characters.toLocaleString()} / {MAX_CHARACTERS.toLocaleString()} characters
                     </span>
 
                     <span className="text-xs text-[var(--text-muted)]">
-                        Supports job descriptions from LinkedIn, Indeed, Naukri, Wellfound,
-                        company career pages, and more.
+                        Supports LinkedIn, Indeed, Naukri, Wellfound, and more.
                     </span>
                 </div>
             </div>
 
             {/* CTA */}
-            <div className="mt-8 flex justify-end">
+            <div className="mt-6 sm:mt-8 flex justify-end">
                 <button
                     onClick={onSubmit}
                     disabled={disabled}
                     className="
+            w-full sm:w-auto
             inline-flex
             items-center
             justify-center
